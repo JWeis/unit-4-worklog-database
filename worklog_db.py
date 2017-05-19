@@ -7,7 +7,7 @@ db = SqliteDatabase('work_log.db')
 
 class EmpLog(Model):
     employee_name = CharField(max_length=255)
-    task_date = DateTimeField(default=datetime.datetime.now)
+    task_date = DateTimeField(default=datetime.datetime.now().strftime('%m/%d/%Y'))
     title = CharField(max_length=255)
     time_spent = IntegerField()
     task_notes = TextField()
