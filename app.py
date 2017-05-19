@@ -142,6 +142,7 @@ app_menu = OrderedDict([
 ])
 """
 
+
 def find_entries():
     type = input("How would you like to find work entries?: "
                  "1: By Employee Name, "
@@ -149,12 +150,26 @@ def find_entries():
                  "3: By Time Spent, "
                  "4: By Search Query  ")
     if type == '1':
+        show_available('employee')
+        name = input("What is the Employees Name?  ")
+        pass
+    if type == '2':
+        show_available('date')
+
+        pass
+    if type == '3':
+        show_available('time')
+
+        pass
+    if type == '4':
+
         name = input("What is the Employees Name?  ")
         pass
 
 
 if __name__ == '__main__':
     initialize()
+    find_entries()
     #my_entries = find_string_entries(emp_name, 'James')
     #print(find_emp_name("James"))
     #add_log()
