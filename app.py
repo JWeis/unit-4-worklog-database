@@ -97,9 +97,11 @@ def show_available_time():
 def show_available_dates():
     """Show Available Dates"""
     output = []
+    show_output=[]
     entries = list(EmpLog.select().order_by(EmpLog.time_spent.desc()))
     for i in range(0, len(entries)):
-        if entries[i].task_date not in output:
+        if entries[i].task_date not in output or show_output:
+            show_output.append(entries[i].task_date)
             fmt_date = entries[i].task_date.strftime("%m/%d/%Y")
             if fmt_date not in output:
                 output.append(fmt_date)
@@ -113,25 +115,40 @@ def show_available_dates():
     print("Enter 'b' at anytime to go back")
 
     count = 0
+
     while len(output) > 0:
-        if count <= 0:
-            month = int(input("Enter two digit month:  "))
-            day = int(input("Enter two digit day:  "))
-            year = int(input("Enter two digit year:  "))
-        else:
-            clear()
-            print("No more entries found. Please choose another or 'b' to go back to search menu")
-            show_available_dates()
-        if day or month or year != 'b':
-            count += 1
-            date_logs = get.by_date(year=year, month=month, day=day)
-            show(date_logs)
-        else:
-            find_menu_loop()
+        try:
+            if count <= 0:
+                month = input("Enter two digit month:  ")
+                if month != 'b':
+                    month = int(month)
+                else:
+                    find_menu_loop()
+                day = input("Enter two digit day:  ")
+                if day != 'b':
+                    day = int(day)
+                else:
+                    find_menu_loop()
+                year = input("Enter four digit year:  ")
+                if year != 'b':
+                    year = int(year)
+                else:
+                    find_menu_loop()
+                date_logs = get.by_date(year=year, month=month, day=day)
+                if date_logs in show_output:
+                    count += 1
+                    show(date_logs)
+            else:
+                clear()
+                print("No more records found.")
+                show_available_dates()
+        except ValueError:
+            print("Please follow input instructions...")
     else:
         choice = input("No entries found. Select 'b' to go back:  ")
         if choice:
             find_menu_loop()
+
 
 
 def show_available_emp():
@@ -200,7 +217,6 @@ def show(logs):
             menu_loop()
         elif next_action == 'd':
             delete_entry(entry)
-
 
 def menu_loop():
     choice = None
