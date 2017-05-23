@@ -2,10 +2,11 @@ import datetime
 import os
 import sys
 
-
 from collections import OrderedDict
-
 from worklog_db import db, EmpLog
+from get_logs import GetLogs
+
+get = GetLogs()
 
 
 def initialize():
@@ -16,37 +17,6 @@ def initialize():
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
-def find_time_spent(num):
-    emp_entries = EmpLog.select().order_by(EmpLog.time_spent.desc())
-    if num:
-        emp_entries = emp_entries.where(EmpLog.time_spent == num)
-    return emp_entries
-
-
-def find_emp_name(arg):
-    emp_entries = EmpLog.select().order_by(EmpLog.time_spent.desc())
-    if arg:
-        emp_entries = emp_entries.where(EmpLog.employee_name.contains(arg))
-    return emp_entries
-
-
-def find_title_query(query):
-    emp_entries = EmpLog.select().order_by(EmpLog.time_spent.desc())
-    if query:
-        emp_entries = emp_entries.where(EmpLog.title.contains(query))
-    return emp_entries
-
-
-def find_notes_query(query):
-    emp_entries = EmpLog.select().order_by(EmpLog.time_spent.desc())
-    if query:
-        emp_entries = emp_entries.where(EmpLog.task_notes.contains(query))
-    return emp_entries
-
-
-def find_by_date(date): #TODO Need to fix
-    pass
-
 
 def add_log():
     """Add a new entry to the Work Log"""
@@ -54,7 +24,7 @@ def add_log():
     employee_name = input("Enter employee name:  ").lower().strip()
     date = datetime.datetime.now()
     task_title = input("Task Title:  ").lower().strip()
-    task_time = int(input("Time Spent:  "))
+    task_time = int(input("Time Spent [minutes only]:  "))
     new_notes = input("Notes: ").lower().strip()
     EmpLog.create(employee_name=employee_name,
                   task_date=date,
@@ -92,8 +62,9 @@ def show_available_time():
     print("Available Times:")
     for i in output:
         print(i, 'Minutes')
-    print("Enter 'b' to go back")
 
+
+    print("Enter 'b' to go back")
     count = 0
     while len(output) > 0:
         if count <= 0:
@@ -112,7 +83,7 @@ def show_available_time():
         if choice != 'b':
             if choice in output:
                 count += 1
-                show(find_time_spent(choice))
+                show(get.time_spent(choice))
             else:
                 continue
         else:
@@ -139,7 +110,28 @@ def show_available_dates():
     print("Available Dates:")
     for i in output:
         print(i)
+    print("Enter 'b' at anytime to go back")
 
+    count = 0
+    while len(output) > 0:
+        if count <= 0:
+            month = int(input("Enter two digit month:  "))
+            day = int(input("Enter two digit day:  "))
+            year = int(input("Enter two digit year:  "))
+        else:
+            clear()
+            print("No more entries found. Please choose another or 'b' to go back to search menu")
+            show_available_dates()
+        if day or month or year != 'b':
+            count += 1
+            date_logs = get.by_date(year=year, month=month, day=day)
+            show(date_logs)
+        else:
+            find_menu_loop()
+    else:
+        choice = input("No entries found. Select 'b' to go back:  ")
+        if choice:
+            find_menu_loop()
 
 
 def show_available_emp():
@@ -151,7 +143,7 @@ def show_available_emp():
             output.append(entries[i].employee_name)
         else:
             pass
-    #clear()
+
     print("Employee Names:")
     for i in output:
         print(i)
@@ -167,7 +159,8 @@ def show_available_emp():
         if choice != 'b':
             if choice in output:
                 count += 1
-                show(find_emp_name(choice))
+                emp_logs = get.emp_name(choice)
+                show(emp_logs)
             else:
                 continue
         else:
@@ -176,6 +169,14 @@ def show_available_emp():
         choice = input("No entries found. Select 'b' to go back:  ")
         if choice:
             find_menu_loop()
+
+
+def get_query():
+    """Search by Query"""
+    clear()
+    query = input("Please type your query:  ").lower().strip()
+    query_logs = [get.by_query(query)]
+    return query_logs
 
 
 def show(logs):
@@ -249,12 +250,17 @@ find_entries_menu = OrderedDict([
     ('e', show_available_emp),
     ('d', show_available_dates),
     ('t', show_available_time),
+    ('s', get_query),
 ])
 
 
 if __name__ == '__main__':
     initialize()
     menu_loop()
+    #find_by_date()
+    #test = get.by_query('trafsda')
+    #print(test)
+
 
 
 
