@@ -8,12 +8,12 @@ from get_logs import GetLogs
 get = GetLogs()
 
 
-def initialize():
+def initialize():  # pragma: no cover
     """Create the database and the table if they don't exits."""
     db.create_tables([EmpLog], safe=True)
 
 
-def clear():
+def clear():  # pragma: no cover
     os.system('cls' if os.name == 'nt' else 'clear')
 
 

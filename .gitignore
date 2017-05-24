@@ -54,3 +54,5 @@ WL4/bin/pwiz.py
 WL4/bin/python
 
 WL4/bin/python3
+
+.coverage
