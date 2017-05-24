@@ -14,4 +14,3 @@ class EmpLog(Model):
 
     class Meta:
         database = db
-

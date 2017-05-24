@@ -19,14 +19,7 @@ class GetLogs():
             emp_entries = emp_entries.where(EmpLog.employee_name.contains(arg))
         return emp_entries
 
-    def by_query(self, query):  #TODO Need to fix
-        emp_entries = EmpLog.select()
-        if query:
-            emp_entries = emp_entries.where(EmpLog.title.contains(query),
-                                            EmpLog.task_notes.contains(query))
-        return emp_entries
-
-    def by_date(self, day, month, year):  # TODO Need to fix
+    def by_date(self, day, month, year):
         input_date = datetime.date(year=year, month=month, day=day)
         emp_entries = EmpLog.select()
         if day and month and year:

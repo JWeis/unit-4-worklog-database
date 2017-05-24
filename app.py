@@ -1,6 +1,5 @@
 import datetime
 import os
-import sys
 
 from collections import OrderedDict
 from worklog_db import db, EmpLog
@@ -20,22 +19,26 @@ def clear():
 
 def add_log():
     """Add a new entry to the Work Log"""
-    print("Add a new entry to the Work Log")
-    employee_name = input("Enter employee name:  ").lower().strip()
+    print("Add a new entry to the Work Log\n")
+    employee_name = input("Enter Name:  ").lower().strip()
     date = datetime.datetime.now()
-    task_title = input("Task Title:  ").lower().strip()
-    task_time = int(input("Time Spent [minutes only]:  "))
-    new_notes = input("Notes: ").lower().strip()
+    task_title = input("\nTask Name:  ").lower().strip()
+    task_time = int(input("\nTime Spent [minutes only]:  "))
+    new_notes = input("\nAdditional Notes: ").lower().strip()
+
     EmpLog.create(employee_name=employee_name,
                   task_date=date,
                   title=task_title,
                   time_spent=task_time,
                   task_notes=new_notes)
+
     clear()
-    print("Task added successfully!")
+
+    print("*** Task added successfully! ***\n")
     next_action = input("a) Add another entry\n"
                         "b) Back to main menu\n"
-                        "Action: ").lower().strip()
+                        "\nAction: ").lower().strip()
+
     if next_action == "a":
         clear()
         add_log()
@@ -54,18 +57,20 @@ def show_available_time():
     """Show Available Times"""
     output = []
     entries = list(EmpLog.select().order_by(EmpLog.time_spent.desc()))
+
     for i in range(0, len(entries)):
         if entries[i].time_spent not in output:
             output.append(entries[i].time_spent)
         else:
             pass
-    print("Available Times:")
+
+    print("Available Times Spent:\n")
     for i in output:
         print(i, 'Minutes')
 
-
-    print("Enter 'b' to go back")
+    print("\nEnter 'b' to go back")
     count = 0
+
     while len(output) > 0:
         if count <= 0:
             choice = input("Please enter a time amount [numbers only]: ")
@@ -78,8 +83,10 @@ def show_available_time():
                     print("Please use numbers only or 'b'...")
         else:
             clear()
-            print("No more entries found. Please choose another or 'b' to go back to search menu")
+            print("*** No more entries found. Please choose another ***\n "
+                  "*** Or 'b' to go back to search menu ***")
             show_available_time()
+
         if choice != 'b':
             if choice in output:
                 count += 1
@@ -88,6 +95,7 @@ def show_available_time():
                 continue
         else:
             find_menu_loop()
+
     else:
         choice = input("No entries found. Select 'b' to go back:  ")
         if choice:
@@ -99,6 +107,7 @@ def show_available_dates():
     output = []
     show_output=[]
     entries = list(EmpLog.select().order_by(EmpLog.time_spent.desc()))
+
     for i in range(0, len(entries)):
         if entries[i].task_date not in output or show_output:
             show_output.append(entries[i].task_date)
@@ -109,11 +118,12 @@ def show_available_dates():
                 continue
         else:
             pass
-    print("Available Dates:")
+
+    print("Available Dates:\n")
     for i in output:
         print(i)
-    print("Enter 'b' at anytime to go back")
 
+    print("\nEnter 'b' at anytime to go back")
     count = 0
 
     while len(output) > 0:
@@ -140,60 +150,59 @@ def show_available_dates():
                     show(date_logs)
             else:
                 clear()
-                print("No more records found.")
+                print("*** No more entries found. Please choose another ***\n "
+                      "*** Or 'b' to go back to search menu ***")
                 show_available_dates()
         except ValueError:
             print("Please follow input instructions...")
+
     else:
         choice = input("No entries found. Select 'b' to go back:  ")
         if choice:
             find_menu_loop()
-
 
 
 def show_available_emp():
     """Show Employee Names"""
     output = []
     entries = list(EmpLog.select().order_by(EmpLog.time_spent.desc()))
+
     for i in range(0, len(entries)):
         if entries[i].employee_name not in output:
             output.append(entries[i].employee_name)
         else:
             pass
 
-    print("Employee Names:")
+    print("Employee Names:\n")
     for i in output:
-        print(i)
-    print("Enter 'b' to go back")
+        print(i.capitalize())
+
+    print("\nEnter 'b' to go back")
     count = 0
+
     while len(output) > 0:
         if count <= 0:
-            choice = input("Please enter an employee name: ")
+            choice = input("Please enter an employee name: ").lower().strip()
         else:
             clear()
-            print("No more entries found. Please choose another or 'b' to go back to search menu")
+            print("*** No more entries found. Please choose another ***\n "
+                  "*** Or 'b' to go back to search menu ***")
             show_available_emp()
+
         if choice != 'b':
             if choice in output:
                 count += 1
                 emp_logs = get.emp_name(choice)
                 show(emp_logs)
             else:
-                continue
+                print("Please choose a name that is shown above..")
         else:
             find_menu_loop()
+
     else:
         choice = input("No entries found. Select 'b' to go back:  ")
         if choice:
             find_menu_loop()
-
-
-def get_query():
-    """Search by Query"""
-    clear()
-    query = input("Please type your query:  ").lower().strip()
-    query_logs = [get.by_query(query)]
-    return query_logs
 
 
 def show(logs):
@@ -217,6 +226,9 @@ def show(logs):
             menu_loop()
         elif next_action == 'd':
             delete_entry(entry)
+        else:
+            print("Please chose 'n', 'd' or 'q'..")
+
 
 def menu_loop():
     choice = None
@@ -224,17 +236,19 @@ def menu_loop():
     while choice != 'q':
         clear()
         print("Please make a selection")
-        print("Enter 'q' to Quit.")
+        print("Enter 'q' to Quit0.\n")
         for key, value in app_menu.items():
             print("{}) {}".format(key, value.__doc__))
-        choice = input("Action: ").lower().strip()
+        choice = input("\nAction: ").lower().strip()
 
         if choice in app_menu:
             clear()
             app_menu[choice]()
 
-        if choice == 'q':
+        elif choice == 'q':
             quit()
+        else:
+            print("Please chose an item from the menu given..")
 
 
 def find_menu_loop():
@@ -244,14 +258,16 @@ def find_menu_loop():
     while choice != 'b':
         clear()
         print("Choose a method to search entries")
-        print("Enter 'b' to go back.")
+        print("Enter 'b' to go back.\n")
         for key, value in find_entries_menu.items():
             print("{}) {}".format(key, value.__doc__))
-        choice = input("Action: ").lower().strip()
+        choice = input("\nAction: ").lower().strip()
 
         if choice in find_entries_menu:
             clear()
             find_entries_menu[choice]()
+        else:
+            print("Please chose an item from the menu given..")
     if choice == 'b':
         menu_loop()
 
@@ -266,17 +282,9 @@ find_entries_menu = OrderedDict([
     ('e', show_available_emp),
     ('d', show_available_dates),
     ('t', show_available_time),
-    ('s', get_query),
 ])
 
 
 if __name__ == '__main__':
     initialize()
     menu_loop()
-    #find_by_date()
-    #test = get.by_query('trafsda')
-    #print(test)
-
-
-
-
