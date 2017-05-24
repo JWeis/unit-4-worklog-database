@@ -8,12 +8,12 @@ from get_logs import GetLogs
 get = GetLogs()
 
 
-def initialize():  # pragma: no cover
+def initialize():
     """Create the database and the table if they don't exits."""
     db.create_tables([EmpLog], safe=True)
 
 
-def clear():  # pragma: no cover
+def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
@@ -236,7 +236,7 @@ def menu_loop():
     while choice != 'q':
         clear()
         print("Please make a selection")
-        print("Enter 'q' to Quit0.\n")
+        print("Enter 'q' to Quit.\n")
         for key, value in app_menu.items():
             print("{}) {}".format(key, value.__doc__))
         choice = input("\nAction: ").lower().strip()
@@ -246,13 +246,14 @@ def menu_loop():
             app_menu[choice]()
 
         elif choice == 'q':
+            clear()
             quit()
         else:
             print("Please chose an item from the menu given..")
 
 
 def find_menu_loop():
-    """Find Entries"""
+    """Find Entries in Work Log"""
     choice = None
 
     while choice != 'b':

@@ -1,6 +1,5 @@
 import unittest
 
-import app
 from get_logs import GetLogs
 from worklog_db import EmpLog
 
@@ -23,10 +22,6 @@ class WorkLogTests(unittest.TestCase):
         assert EmpLog.task_notes == True
         assert EmpLog.title == True
 
-
-class AppTests(unittest.TestCase):
-    def test_menu_loop(self):
-        assert app.menu_loop()
 
 if __name__ == '__main__':
     unittest.main()
